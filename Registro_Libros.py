@@ -11,14 +11,14 @@ def salirAplicación():
     if valor == "yes":
         raiz.destroy()
 
-
+        #Añadiendo libros en el archivo.
 def insertar_Datos():
     mi_Orden = miOrden.get()
     mi_Autor = miAutor.get()
     mi_Apellido = miApellido.get()
     mi_Libro = miLibro.get()
     mi_Comentario = miComentario.get()
-
+  
 #-----Creacion del archivo txt de la lista de libros---------------
     file = open("Libreria_de_Casa.txt", "a+", encoding="utf-8")
     file.write(mi_Orden + "\t")
@@ -26,15 +26,8 @@ def insertar_Datos():
     file.write(mi_Apellido + "\t")
     file.write(mi_Libro + "\t")
     file.write(mi_Comentario + "\n")
-    
-    messagebox.showinfo("Insertar", "Registro ralizado con exito")
-
-    lista = file.read()
-
     file.close()
-
-
-
+    messagebox.showinfo("Insertar", "Registro ralizado con exito")
 
 
 #-------------Borrar los Campos de los Entry--------------------
@@ -46,14 +39,11 @@ def borrar_Campos():
     miComentario.set("")
 
 
-
-
 raiz = ttk.Window(themename="vapor")
 raiz.title("Libros de Casa")
-#raiz.config(width=300, height=200)
+raiz.config(width=300, height=200)
 raiz.iconbitmap("librero.ico")
 raiz.resizable(0, 0)
-
 
 #----Ventana Label----------
 ventana_Datos = LabelFrame(raiz, text="Insertar Datos")
@@ -87,6 +77,14 @@ barra_Menu.add_cascade(label="Ayuda", menu=menu_Ayuda)
 menu_Ayuda.add_command(label="Licencia")
 menu_Ayuda.add_command(label="Acerca de..")
 
+#---------------Variables de los Entry-------------------------
+miOrden = StringVar()
+miAutor = StringVar()
+miApellido = StringVar()
+miLibro = StringVar()
+miComentario= StringVar()
+
+
 
 #----------------Etiquetas---------------------
 labelOrden = Label(ventana_Datos, 
@@ -110,48 +108,40 @@ labelComent = Label(ventana_Datos,
                         font=8).grid(row=4, column=0, padx=5, pady=10, sticky="e")
 
 
-#---------------Variables de los Entry-------------------------
-miOrden = StringVar()
-miAutor = StringVar()
-miApellido = StringVar()
-miLibro = StringVar()
-miComentario= StringVar()
-
-
 #----------------Entradas-----------------------------------
-entryOrden = Entry(ventana_Datos, 
-                    width=10, fg="#00F6FA", textvariable=miOrden).grid(row=0, column=1, padx=20, sticky="w")
+entryOrden = ttk.Entry(ventana_Datos, 
+                    width=10, textvariable=miOrden).grid(row=0, column=1, padx=20, sticky="w")
 
-entryAutor = Entry(ventana_Datos, 
-                    width=25, fg="#00F6FA", textvariable=miAutor).grid(row=1, column=1, padx=20, sticky="w")
+entryAutor = ttk.Entry(ventana_Datos, 
+                    width=25, textvariable=miAutor).grid(row=1, column=1, padx=20, sticky="w")
 
-entryApellido = Entry(ventana_Datos, 
-                    width=25, fg="#00F6FA", textvariable=miApellido).grid(row=2, column=1, padx=20, sticky="w")
+entryApellido = ttk.Entry(ventana_Datos, 
+                    width=25, textvariable=miApellido).grid(row=2, column=1, padx=20, sticky="w")
 
-entryLibro = Entry(ventana_Datos, 
-                    width=50, fg="#00F6FA", textvariable=miLibro).grid(row=3, column=1, padx=20, sticky="w")
+entryLibro = ttk.Entry(ventana_Datos, 
+                    width=50, textvariable=miLibro).grid(row=3, column=1, padx=20, sticky="w")
 
-entryComentario = Entry(ventana_Datos, 
-                        width=50, fg="#00F6FA", textvariable=miComentario).grid(row=4, column=1, padx=20, sticky="w")
+entryComentario = ttk.Entry(ventana_Datos, 
+                        width=50, textvariable=miComentario).grid(row=4, column=1, padx=20, sticky="w")
 
 
 
 #------------Botones--------------------------------------
 
-boton_Insertar = Button(ventana_Botones,
+boton_Insertar = ttk.Button(ventana_Botones,
                            text="Insertar", command=insertar_Datos).grid(row=0, column=0, padx=40, pady=10)
 
-boton_Leer = Button(ventana_Botones, 
-                           text="Leer").grid(row=0, column=1, padx=40, pady=10)
+boton_Leer = ttk.Button(ventana_Botones, 
+                           text="Mostrar Lista").grid(row=0, column=1, padx=40, pady=10)
 
-boton_Modificar = Button(ventana_Botones, 
+boton_Modificar = ttk.Button(ventana_Botones, 
                            text="Modificar").grid(row=0, column=2, padx=40, pady=10)
 
-boton_BorrarCampos = Button(ventana_Botones, 
+boton_BorrarCampos = ttk.Button(ventana_Botones, 
                            text="Borrar Campos", command=borrar_Campos).grid(row=0, column=3, padx=40, pady=10)
 
 
-#------------Barra Desplazadora----------------------
+
 
 
 
@@ -162,8 +152,8 @@ cuadro_Texto = Text(ventana_Texto,
                       font=("Times New Roman", 13))
 cuadro_Texto.config(fg="#00F6FA")
 cuadro_Texto.grid(row=3, column=0, sticky="news")
-#cuadro_Texto.config(yscrollcommand=barra_desplaza.set)
 
+#------------Barra Desplazadora----------------------
 barra_desplaza = Scrollbar(ventana_Texto, orient=VERTICAL, command=cuadro_Texto.yview)
 barra_desplaza.grid(row=3, column=1, sticky="news")
 cuadro_Texto.config(yscrollcommand=barra_desplaza.set)
