@@ -21,7 +21,7 @@ def insertar_Datos():
     
     try:
         file = open("Libreria_de_Casa.txt", "r+", encoding="utf-8")
-        valorfila = file.readline()
+        valorfila = file.readlines()
         fila = len(valorfila)
         print(f'{fila}, {mi_Orden}')
         file.close()
@@ -49,7 +49,7 @@ def insertar_Datos():
         def insertar_Tabla():
             tabla.insert("", END, text=mi_Orden, values=(mi_Autor, mi_Apellido, mi_Libro, mi_Comentario))
     
-    insertar_Tabla()
+        insertar_Tabla()
 
 #---------------Muestra el listado creado en una ventana distita-----------------
 def mostrar_Lista():
@@ -57,11 +57,15 @@ def mostrar_Lista():
     ventana_Lista= ttk.Toplevel()
     ventana_Lista.title("Lista de Libros Guardados")
     lista = open("Libreria_de_Casa.txt", "r")
-    extraerTexto = lista.read()   
-    
+    extraerTexto = lista.read()
+    #----------Estas dos lineas hacen que aparezca el mismo icono en este  nivel----------------
+    iconoVentana = PhotoImage(file="icono.png")
+    ventana_Lista.iconphoto(False, iconoVentana)
+
+        
     botonCerrar = Button(
         ventana_Lista,
-        text="Cerrar Ventana",
+        text="Cerrar",
         command=ventana_Lista.destroy    
     )
     botonCerrar.pack(side=BOTTOM)
@@ -70,12 +74,12 @@ def mostrar_Lista():
                         text=extraerTexto,
                         font=5
     )
-    archivoLista.pack(padx=20, pady=20)
+    archivoLista.pack(padx=30)
     lista.close()
 
-    barra_desplaza = Scrollbar(ventana_Lista, orient=VERTICAL)
-    barra_desplaza.pack(side=RIGHT, fill=Y)
-    barra_desplaza.config(command=ventana_Lista.yview)
+    '''¡barra_desplaza = Scrollbar(ventana_Lista, orient=VERTICAL)
+    barra_desplaza.pack( side=RIGHT, fill=Y)
+    barra_desplaza.config(command=ventana_Lista.yview)'''
 
     
 #-------------Borrar los Campos de las Entradas(Entry)--------------------
@@ -90,7 +94,8 @@ def borrar_Campos():
 raiz = ttk.Window(themename="superhero")
 raiz.title("Libros de Casa")
 raiz.config(width=500, height=300, padx=10, pady=10)
-raiz.iconbitmap("librero.ico")
+icono = PhotoImage(file="icono.png")
+raiz.iconphoto(False, icono)
 raiz.resizable(0, 0)
 
 #----Ventana para las etiquetas de los diferentes campos(Label)----------
