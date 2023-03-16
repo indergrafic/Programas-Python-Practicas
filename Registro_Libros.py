@@ -2,6 +2,8 @@ from tkinter import *
 import ttkbootstrap as ttk
 from tkinter import messagebox
 from io import open
+import openai
+
 
 
 #----------------FUNCIONES-----------------------------------------------
@@ -20,23 +22,23 @@ def insertar_Datos():
     mi_Comentario = miComentario.get()
     
     try:
-        file = open("Libreria_de_Casa.txt", "r+", encoding="utf-8")
+        file = open("Libreria_de_Casa.txt", "r", encoding="utf-8")
         valorfila = file.readlines()
         fila = len(valorfila)
-        print(f'{fila}, {mi_Orden}')
         file.close()
         
     except FileNotFoundError:
-        mi_Orden = 0
-        fila = 0
+        file = open("Libreria_de_Casa.txt", "a", encoding="utf-8")
+        file.close()
             
-       
-    if int(mi_Orden, base=10) <= fila:
+    mi_Orden = int(mi_Orden, base=10)   
+    if mi_Orden <= fila:
         messagebox.showinfo("Modificar", f"El numero de la lista ya esta en uso.\n Su ultima etrada es la nº{fila}")
         miOrden.set("")
         
     else:  
 #-----------------Creacion del archivo txt de la lista de libros-------------------------
+        mi_Orden = str(mi_Orden)
         file = open("Libreria_de_Casa.txt", "a+", encoding="utf-8")
         file.write(mi_Orden + "\t")
         file.write(mi_Autor + "\t\t")
@@ -90,6 +92,93 @@ def borrar_Campos():
     miLibro.set("")
     miComentario.set("")
 
+def borrar_Linea():
+    eliminar_Linea = ttk.Toplevel()
+    eliminar_Linea.config(width=100, height=100)
+    eliminar_Linea.title("Eliminar Linea")
+    lista = open("Libreria_de_Casa.txt", "a+")
+    linea = lista.readlines()
+    lista = len(linea)
+    #----------Estas dos lineas hacen que aparezca el mismo icono en este  nivel----------------
+    iconoVentana = PhotoImage(file="icono.png")
+    eliminar_Linea.iconphoto(False, iconoVentana)
+ 
+    archivoLista = Label(eliminar_Linea,
+                        text="Elija la linea a eliminar",
+                        font=5)
+    archivoLista.pack(padx=20, pady=20)
+
+    
+    caja_Elegir = Spinbox(eliminar_Linea,
+                          values= lista,
+                          increment=1,
+                          state="readonly",
+                          command=linea_Eliminada,
+                          font=5)
+    caja_Elegir.pack(padx=20, pady=20)
+
+    def linea_Eliminada():
+        lista.delete()
+
+    
+    botonCerrar = Button(
+        eliminar_Linea,
+        text="Cerrar",
+        command=eliminar_Linea.destroy)
+    botonCerrar.pack(side=BOTTOM)
+
+    lista.close()
+
+#-------------Interfaz Chat-------------------------------
+
+def chat():
+    chatgpt = ttk.Toplevel()
+    chatgpt.config(width=200, height=100)
+    chatgpt.title("Chat-Davinci")
+    openai.api_key ="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"
+    global respuesta
+
+    mi_pregunta = pregunta.get()
+    
+    completion = openai. Completion.create(engine="text-davinci-003",
+                            prompt= mi_pregunta,
+                            max_tokens=2048)
+
+    respuesta.set(completion.choices[0].text)      
+        
+    pregunta = StringVar()
+    respuesta = StringVar()
+
+    info = ttk.Label(chatgpt, 
+                     text="Introduce una pregunta:",
+                     justify=CENTER, 
+                     font=("Arial", 20))
+    info.pack(padx=5, pady=5)
+
+    info = ttk.Label(chatgpt, 
+                     text="Información actualizada hasta el 2020",
+                     justify=CENTER, 
+                     font=("Arial", 8))
+    info.pack(padx=5, pady=5)
+
+    entrada = ttk.Entry(chatgpt, 
+                        width=100, 
+                        textvariable=pregunta)
+    entrada.pack(padx=5, pady=5)
+
+    preguntar = ttk.Button(chatgpt, 
+                           text="Preguntar",
+                           command=chatGpt)
+    preguntar.pack(padx=5, pady=5)
+
+    info = Message(chatgpt,
+                    fg="#D3FDDA",
+                    bg="#2b3e50",
+                    textvariable=respuesta, 
+                    font=("Arial", 10))
+    info.pack(padx=5, pady=5)
+
+
 #----------------------------------Ventana Principal-----------------------------------
 raiz = ttk.Window(themename="superhero")
 raiz.title("Libros de Casa")
@@ -121,7 +210,7 @@ menu_Salir.add_command(label="Cerrar", command=salirAplicación)
 
 menu_Editar = ttk.Menu(barra_Menu, tearoff=0)
 barra_Menu.add_cascade(label="Editar", menu=menu_Editar)
-menu_Editar.add_command(label="Modificar")
+menu_Editar.add_command(label="Chat", command=chat)
 menu_Editar.add_command(label="Imprimir")
 menu_Editar.add_command(label="Crear PDF")
 
@@ -192,16 +281,20 @@ entryComentario = ttk.Entry(ventana_Datos,
 #------------Botones de acciones--------------------------------------
 
 boton_Insertar = ttk.Button(ventana_Botones,
-                           text="Insertar", command=insertar_Datos).grid(row=0, column=0, padx=40, pady=10)
+                           text="Insertar", 
+                           command=insertar_Datos).grid(row=0, column=0, padx=40, pady=10)
 
 boton_Leer = ttk.Button(ventana_Botones, 
-                           text="Ventana Lista", command=mostrar_Lista).grid(row=0, column=1, padx=40, pady=10)
+                           text="Ventana Lista", 
+                           command=mostrar_Lista).grid(row=0, column=1, padx=40, pady=10)
 
 boton_Modificar = ttk.Button(ventana_Botones, 
-                           text="Cambiar Tema").grid(row=0, column=2, padx=40, pady=10)
+                           text="Eliminar Linea", 
+                           command=borrar_Linea).grid(row=0, column=2, padx=40, pady=10)
 
 boton_BorrarCampos = ttk.Button(ventana_Botones, 
-                           text="Borrar Campos", command=borrar_Campos).grid(row=0, column=3, padx=40, pady=10)
+                           text="Borrar Campos", 
+                           command=borrar_Campos).grid(row=0, column=3, padx=40, pady=10)
 
 
 #------------Tabla de Datos que se muestra en el fondo de la aplicación----------------
