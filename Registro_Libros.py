@@ -2,7 +2,7 @@ from tkinter import *
 import ttkbootstrap as ttk
 from tkinter import messagebox
 from io import open
-import openai
+
 
 
 
@@ -30,8 +30,13 @@ def insertar_Datos():
     except FileNotFoundError:
         file = open("Libreria_de_Casa.txt", "a", encoding="utf-8")
         file.close()
-            
-    mi_Orden = int(mi_Orden, base=10)   
+
+    try:        
+        mi_Orden = int(mi_Orden, base=10)   
+    except ValueError:
+        messagebox.showinfo("Informacion", "     Archivo creado.\n Ya puede insertar datos") 
+
+
     if mi_Orden <= fila:
         messagebox.showinfo("Modificar", f"El numero de la lista ya esta en uso.\n Su ultima etrada es la nº{fila}")
         miOrden.set("")
@@ -49,40 +54,36 @@ def insertar_Datos():
         messagebox.showinfo("Insertar", "Registro ralizado con exito")
         file.close()
         def insertar_Tabla():
-            tabla.insert("", END, text=mi_Orden, values=(mi_Autor, mi_Apellido, mi_Libro, mi_Comentario))
+            tabla.insert("", END, text=mi_Orden, 
+                         values=(mi_Autor, mi_Apellido, mi_Libro, mi_Comentario))
     
         insertar_Tabla()
 
 #---------------Muestra el listado creado en una ventana distita-----------------
 def mostrar_Lista():
 
-    ventana_Lista= ttk.Toplevel()
+    ventana_Lista= Toplevel()
     ventana_Lista.title("Lista de Libros Guardados")
     lista = open("Libreria_de_Casa.txt", "r")
     extraerTexto = lista.read()
     #----------Estas dos lineas hacen que aparezca el mismo icono en este  nivel----------------
-    iconoVentana = PhotoImage(file="icono.png")
+    iconoVentana = ttk.PhotoImage(file="icono.png")
     ventana_Lista.iconphoto(False, iconoVentana)
 
         
     botonCerrar = Button(
         ventana_Lista,
         text="Cerrar",
-        command=ventana_Lista.destroy    
-    )
+        command=ventana_Lista.destroy)
     botonCerrar.pack(side=BOTTOM)
     
     archivoLista = Label(ventana_Lista, justify='left',
                         text=extraerTexto,
-                        font=5
-    )
+                        font=5)
     archivoLista.pack(padx=30)
     lista.close()
 
-    '''¡barra_desplaza = Scrollbar(ventana_Lista, orient=VERTICAL)
-    barra_desplaza.pack( side=RIGHT, fill=Y)
-    barra_desplaza.config(command=ventana_Lista.yview)'''
-
+    
     
 #-------------Borrar los Campos de las Entradas(Entry)--------------------
 def borrar_Campos():
@@ -92,93 +93,10 @@ def borrar_Campos():
     miLibro.set("")
     miComentario.set("")
 
-def borrar_Linea():
-    eliminar_Linea = ttk.Toplevel()
-    eliminar_Linea.config(width=100, height=100)
-    eliminar_Linea.title("Eliminar Linea")
-    lista = open("Libreria_de_Casa.txt", "a+")
-    linea = lista.readlines()
-    lista = len(linea)
-    #----------Estas dos lineas hacen que aparezca el mismo icono en este  nivel----------------
-    iconoVentana = PhotoImage(file="icono.png")
-    eliminar_Linea.iconphoto(False, iconoVentana)
- 
-    archivoLista = Label(eliminar_Linea,
-                        text="Elija la linea a eliminar",
-                        font=5)
-    archivoLista.pack(padx=20, pady=20)
-
-    
-    caja_Elegir = Spinbox(eliminar_Linea,
-                          values= lista,
-                          increment=1,
-                          state="readonly",
-                          command=linea_Eliminada,
-                          font=5)
-    caja_Elegir.pack(padx=20, pady=20)
-
-    def linea_Eliminada():
-        lista.delete()
-
-    
-    botonCerrar = Button(
-        eliminar_Linea,
-        text="Cerrar",
-        command=eliminar_Linea.destroy)
-    botonCerrar.pack(side=BOTTOM)
-
-    lista.close()
-
-#-------------Interfaz Chat-------------------------------
-
-def chat():
-    chatgpt = ttk.Toplevel()
-    chatgpt.config(width=200, height=100)
-    chatgpt.title("Chat-Davinci")
-    openai.api_key ="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"
-    global respuesta
-
-    mi_pregunta = pregunta.get()
-    
-    completion = openai. Completion.create(engine="text-davinci-003",
-                            prompt= mi_pregunta,
-                            max_tokens=2048)
-
-    respuesta.set(completion.choices[0].text)      
-        
-    pregunta = StringVar()
-    respuesta = StringVar()
-
-    info = ttk.Label(chatgpt, 
-                     text="Introduce una pregunta:",
-                     justify=CENTER, 
-                     font=("Arial", 20))
-    info.pack(padx=5, pady=5)
-
-    info = ttk.Label(chatgpt, 
-                     text="Información actualizada hasta el 2020",
-                     justify=CENTER, 
-                     font=("Arial", 8))
-    info.pack(padx=5, pady=5)
-
-    entrada = ttk.Entry(chatgpt, 
-                        width=100, 
-                        textvariable=pregunta)
-    entrada.pack(padx=5, pady=5)
-
-    preguntar = ttk.Button(chatgpt, 
-                           text="Preguntar",
-                           command=chatGpt)
-    preguntar.pack(padx=5, pady=5)
-
-    info = Message(chatgpt,
-                    fg="#D3FDDA",
-                    bg="#2b3e50",
-                    textvariable=respuesta, 
-                    font=("Arial", 10))
-    info.pack(padx=5, pady=5)
-
-
+def licencia():
+    messagebox.showinfo("Licencia", "Producto Registrado por\n       InderGrafic")
+def registro():
+    messagebox.showinfo("Acerca de..", "Registro de Libros\n  Copyright 2023")  
 #----------------------------------Ventana Principal-----------------------------------
 raiz = ttk.Window(themename="superhero")
 raiz.title("Libros de Casa")
@@ -210,14 +128,14 @@ menu_Salir.add_command(label="Cerrar", command=salirAplicación)
 
 menu_Editar = ttk.Menu(barra_Menu, tearoff=0)
 barra_Menu.add_cascade(label="Editar", menu=menu_Editar)
-menu_Editar.add_command(label="Chat", command=chat)
+menu_Editar.add_command(label="Crear Lista")
 menu_Editar.add_command(label="Imprimir")
-menu_Editar.add_command(label="Crear PDF")
+
 
 menu_Ayuda = ttk.Menu(barra_Menu, tearoff=0)
 barra_Menu.add_cascade(label="Ayuda", menu=menu_Ayuda)
-menu_Ayuda.add_command(label="Licencia")
-menu_Ayuda.add_command(label="Acerca de..")
+menu_Ayuda.add_command(label="Licencia", command=licencia)
+menu_Ayuda.add_command(label="Acerca de..", command=registro)
 
 #---------------Variables de los Entry-------------------------
 miOrden = StringVar()
@@ -282,19 +200,15 @@ entryComentario = ttk.Entry(ventana_Datos,
 
 boton_Insertar = ttk.Button(ventana_Botones,
                            text="Insertar", 
-                           command=insertar_Datos).grid(row=0, column=0, padx=40, pady=10)
+                           command=insertar_Datos).grid(row=0, column=0, padx=50, pady=10)
 
 boton_Leer = ttk.Button(ventana_Botones, 
-                           text="Ventana Lista", 
-                           command=mostrar_Lista).grid(row=0, column=1, padx=40, pady=10)
-
-boton_Modificar = ttk.Button(ventana_Botones, 
-                           text="Eliminar Linea", 
-                           command=borrar_Linea).grid(row=0, column=2, padx=40, pady=10)
+                           text="Mostrar Registro", 
+                           command=mostrar_Lista).grid(row=0, column=1, padx=50, pady=10)
 
 boton_BorrarCampos = ttk.Button(ventana_Botones, 
                            text="Borrar Campos", 
-                           command=borrar_Campos).grid(row=0, column=3, padx=40, pady=10)
+                           command=borrar_Campos).grid(row=0, column=3, padx=50, pady=10)
 
 
 #------------Tabla de Datos que se muestra en el fondo de la aplicación----------------
